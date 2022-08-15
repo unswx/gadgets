@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+	</head>
+	<body>
+		<button onclick="rolls=[];roll()">Start</button>
+		<div id='chart'></div>
+		<script src='https://code.highcharts.com/highcharts.js'></script>
+		<script>
+			var rolls = [];
+			plot();
+			function roll() {
+				rolls.push(Math.ceil(Math.random()*6));
+				plot();
+				if (rolls.length < 101) setTimeout(roll, 10);
+			}
+			function plot() {
+				var averages = [];
+				var sum = 0;
+				for (let i = 0; i < rolls.length; i++) {
+					sum += rolls[i];
+					averages.push(+(sum/(i+1)).toFixed(2));
+				}
+				Highcharts.chart('chart', {
+					credits: false,
+					title: false,
+					tooltip: {enabled: false},
+					xAxis: {
+						title: {text: 'x'},
+						min: 0,
+						max: 100,
+						minorTicks: true,
+						startOnTick: true,
+						endOnTick: true,
+					},
+					yAxis: {
+						title: {text: 'Average'},
+						min: 1, startOnTick: true,
+						max: 6, endOnTick: true,
+						minorTicks: true,
+						plotLines: [{
+								value: 3.5,
+								color: 'green',
+								dashStyle: 'shortdash',
+								width: 2,
+						}],
+					},
+					series: [
+						{type: 'line', lineWidth: 4, data: averages, animation: false, showInLegend: false},
+					]
+				});
+			}
+		</script>
+	</body>
+</html>
