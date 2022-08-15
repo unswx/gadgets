@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+	  <button onclick='means=[];sample()'>Start</button>
+	  <div id='chart'></div>
+    <script src='https://code.highcharts.com/highcharts.js'></script>
+    <script src='https://code.highcharts.com/modules/histogram-bellcurve.js'></script>
+    <script>
+      var data = [1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 7, 7, 8, 8, 8];
+      var dataMean = data.reduce((t, x) => t + x)/data.length;
+      var means = [];
+      var size = 10;
+      plot();
+      function sample() {
+        var mean = 0;
+        for (i = 1; i <= size; i++) {
+          var n = Math.floor(Math.random()*data.length)
+          mean += data[n]/size;
+        }
+        means.push(Math.round(mean*10)/10);
+        plot();
+        if (means.length < 101) setTimeout(sample, 10);
+      }
+      function plot() {
+        var xmin = Math.floor(Math.min.apply(null, data)) - 1;
+        var xmax = Math.ceil(Math.max.apply(null, data)) + 1;
+        Highcharts.chart('chart', {
+          credits: false,
+          title: false,
+          tooltip: {enabled: false},
+          xAxis: {
+            title: {text: 'Sample mean'},
+            min: xmin, startOnTick: true,
+            max: xmax, endOnTick: true,
+            minorTicks: true,
+            plotLines: [{
+              value: dataMean,
+              color: 'gray',
+              dashStyle: 'shortdash',
+              width: 2,
+            }],
+          },
+          yAxis: {
+            title: {text: 'Frequency'},
+            min: 1, startOnTick: true,
+            max: 20, endOnTick: true,
+            minorTicks: true,
+          },
+          series: [
+            {type: 'histogram', baseSeries: 'means', binWidth: 0.2, animation: false, showInLegend: false},
+            {id: 'means', data: means, visible: false, showInLegend: false},
+            {type: 'histogram', baseSeries: 'data', binWidth: 0.2, color: 'lightgray', animation: false, showInLegend: false},
+            {id: 'data', data: data, visible: false, showInLegend: false},
+          ]
+        });
+      }
+    </script>
+  </body>
+</html>
