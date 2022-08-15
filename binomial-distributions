@@ -1,0 +1,68 @@
+<html>
+<head>
+	<script src='https://code.highcharts.com/highcharts.js'></script>
+	<style>
+		td.val {width: 2em; text-align: center;}
+	</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<td>n:</td>
+			<td class='val'></td>
+			<td><input id='n' type='range' min='0' max='50' step='1' oninput='show()'/></td>
+		</tr>
+		<tr>
+			<td>p:</td>
+			<td class='val'></td>
+			<td><input id='p' type='range' min='0' max='1' step='0.01' oninput='show()'/></td>
+		</tr>
+	</table>
+	<div id='chart'></div>
+</body>
+</html>
+<script>
+var n, p;
+show();
+function f(x) {
+  n = document.getElementById('n').value*1;
+  p = document.getElementById('p').value*1;
+  if (x >= 0 && x <= n && Math.floor(x) == x) return choose(n, x)*(p**x)*((1-p)**(n-x));
+  return 0;
+}
+function choose(n, k) {
+  if (k == 0) return 1;
+  return (n * choose(n-1, k-1))/k;
+}
+function factorial(n) {
+  return n == 1 ? 1 : n*factorial(n-1);
+}
+function show() {
+  document.querySelectorAll('input[type=range]').forEach(
+    elt => elt.parentElement.previousElementSibling.innerHTML = elt.value
+  );
+  var fData = [];
+  for (let i = 0; i <= 50; i += 1) {
+    fData.push({x: i, y: f(i)});
+  }
+  Highcharts.chart('chart', {
+    credits: false,
+    title: false,
+    xAxis: {
+      title: {text: 'x'},
+      min: 0, startOnTick: true,
+      max: n, endOnTick: true,
+      minorTicks: true,
+    },
+    yAxis: {
+      title: {text: 'f(x)'},
+      min: 0, startOnTick: true,
+      max: 1, endOnTick: true,
+      minorTicks: true,
+    },
+    series: [
+      {name: 'f', type: 'column', data: fData, animation: false, showInLegend: false},
+    ]
+  });
+}
+</script>
